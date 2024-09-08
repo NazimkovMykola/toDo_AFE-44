@@ -2,8 +2,33 @@ import { TextField, Paper, Checkbox, Tooltip } from "@mui/material"
 import IconButton from "@mui/material/IconButton"
 import DeleteIcon from "@mui/icons-material/Delete"
 
-const ToDoItem = ({ todo }) => {
+const ToDoItem = ({ todo, setTodo }) => {
   const { id, name, isDone } = todo
+
+  const deleteTodo = (e) => {
+    setTodo((previousState) => {
+      const newState = previousState.filter((el) => el.id != e.target.id)
+      localStorage.setItem("todo", JSON.stringify(newState))
+      return newState
+    })
+  }
+
+  const changeStatus = (e) => {
+    const id = e.target.id
+    setTodo((previousState) => {
+      const newState = [...previousState]
+
+      newState.map((el) => {
+        if (el.id == id) {
+          el.isDone = !el.isDone
+          return el
+        }
+      })
+      localStorage.setItem("todo", JSON.stringify(newState))
+      return newState
+    })
+  }
+  // контрольовані компоненти і неконтрольовані компоненти
   return (
     <Paper
       sx={{
@@ -17,7 +42,7 @@ const ToDoItem = ({ todo }) => {
       elevation={10}
     >
       <Tooltip title="Позначити як виконана">
-        <Checkbox id={id} checked={isDone} />
+        <Checkbox onClick={changeStatus} id={id} checked={isDone} />
       </Tooltip>
       <Tooltip title="Назва справи">
         <TextField
@@ -35,7 +60,12 @@ const ToDoItem = ({ todo }) => {
       </Tooltip>
 
       <Tooltip title="Видалити справу">
-        <IconButton aria-label="delete" size="large">
+        <IconButton
+          id={id}
+          onClick={deleteTodo}
+          aria-label="delete"
+          size="large"
+        >
           <DeleteIcon id={id} fontSize="inherit" />
         </IconButton>
       </Tooltip>

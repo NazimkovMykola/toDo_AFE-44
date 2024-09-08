@@ -1,25 +1,24 @@
+import { useState } from "react"
 import "./App.css"
 import { TextField, Button, Paper } from "@mui/material"
 import ToDoItem from "./components/toDoItem/ToDoItem"
 
 function App() {
-  const todoList = [
-    {
-      name: "Перша справа",
-      id: 1,
-      isDone: true,
-    },
-    {
-      name: "Друга справа",
-      id: 2,
-      isDone: false,
-    },
-    {
-      name: "Третя справа",
-      id: 3,
-      isDone: true,
-    },
-  ]
+  const [todoList, setTodo] = useState(
+    JSON.parse(localStorage.getItem("todo")) || []
+  )
+
+  const addNewTodo = () => {
+    if (document.querySelector("#outlined-basic").value) {
+      const newTodo = [...todoList]
+      const newName = document.querySelector("#outlined-basic").value
+      newTodo.push({ id: todoList.length + 1, name: newName, isDone: false })
+      setTodo(newTodo)
+      localStorage.setItem("todo", JSON.stringify(newTodo))
+      document.querySelector("#outlined-basic").value = ""
+    }
+  }
+
   return (
     <div className="App">
       <h1>Список справ</h1>
@@ -38,11 +37,21 @@ function App() {
           variant="outlined"
           sx={{ mr: "10px" }}
         />
-        <Button variant="contained">Додати справу</Button>
+        <Button onClick={addNewTodo} variant="contained">
+          Додати справу
+        </Button>
       </Paper>
-      <Paper elevation={10} sx={{ padding: "16px" }}>
+      <Paper
+        elevation={10}
+        sx={{
+          padding: "16px",
+          overflowY: "scroll",
+          height: "356px",
+          width: "580px",
+        }}
+      >
         {todoList.map((todo) => {
-          return <ToDoItem todo={todo} />
+          return <ToDoItem setTodo={setTodo} todo={todo} />
         })}
       </Paper>
     </div>
